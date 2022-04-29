@@ -1,0 +1,38 @@
+
+version: "3"
+volumes:
+  dbdata:
+networks:
+  backend:
+    driver: bridge
+services:
+  database:
+    container_name: mysql_database
+    image: mysql:5.7
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      - "MYSQL_DATABASE=dev-db"
+      - "MYSQL_USER=phpmyadmin"
+      - "MYSQL_PASSWORD=phpmyadmin"
+      - "MYSQL_ROOT_PASSWORD=123456"
+    ports:
+      - 8991:3306
+    networks:
+      - backend
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    depends_on:
+      - database
+    environment:
+      - "PMA_HOST=database"
+      - "MYSQL_USER=phpmyadmin"
+      - "MYSQL_PASSWORD=phpmyadmin"
+      - "MYSQL_ROOT_PASSWORD=123456"
+      - "UPLOAD_LIMIT=3000000000"
+    networks:
+      - backend
